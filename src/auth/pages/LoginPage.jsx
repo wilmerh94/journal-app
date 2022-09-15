@@ -2,12 +2,21 @@ import { Google } from '@mui/icons-material';
 import { Button, Link, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Link as RouterLink } from 'react-router-dom';
+import { useForm } from '../../hooks';
 import { AuthLayout } from '../layout/AuthLayout';
 
 export const LoginPage = () => {
+   const { email, password, onInputChange } = useForm({
+      email: 'wilmer@gmail.com',
+      password: '123456',
+   });
+   const onSubmit = (e) => {
+      e.preventDefault();
+      onInputChange(e.target.value);
+   };
    return (
       <AuthLayout title='Login'>
-         <form>
+         <form onSubmit={onSubmit}>
             <Grid container spacing={2}>
                <Grid xs={12} md={6} sx={{ px: 0 }}>
                   <TextField
@@ -15,6 +24,9 @@ export const LoginPage = () => {
                      type='email'
                      placeholder='email@google.com'
                      fullWidth
+                     name='email'
+                     value={email}
+                     onChange={onInputChange}
                   />
                </Grid>
                <Grid xs={12} md={6} sx={{ px: 0 }}>
@@ -23,11 +35,14 @@ export const LoginPage = () => {
                      type='password'
                      placeholder='Password'
                      fullWidth
+                     name='password'
+                     value={password}
+                     onChange={onInputChange}
                   />
                </Grid>
                <Grid container xs={12} md={6} sx={{ mt: 2 }}>
                   <Grid xs={12} sm={6}>
-                     <Button variant='contained' fullWidth>
+                     <Button type='submit' variant='contained' fullWidth>
                         Login
                      </Button>
                   </Grid>
