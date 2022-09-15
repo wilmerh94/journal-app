@@ -1,7 +1,11 @@
+import { BrowserRouter } from 'react-router-dom';
+import { AppRouter } from './router/AppRouter';
+import { AppTheme } from './theme';
+
 export const JournalApp = () => {
    return (
-      <>
-         <h1>Hello World</h1>
-      </>
+      <AppTheme>
+         <AppRouter />
+      </AppTheme>
    );
 };
