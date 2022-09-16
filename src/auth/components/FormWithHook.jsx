@@ -1,25 +1,32 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Link, Typography } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { Alert, Button, Link, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { startCreatingUserWithEmailPassword } from '../../store/auth/thunks';
-import { validationSchema } from '../validations/validationSchema';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { validationSchemaRegister } from '../validations/validationSchema';
 import { FormInputText } from './FormInputText';
+
 export const FormHookYup = () => {
+   const dispatch = useDispatch();
+   const { status, errorMessage } = useSelector((state) => state.auth);
+   const isCheckingAuthentication = useMemo(() => status === 'checking', [status]);
+
    const {
       register,
       handleSubmit,
       reset,
       formState: { errors },
    } = useForm({
-      resolver: yupResolver(validationSchema),
+      resolver: yupResolver(validationSchemaRegister),
    });
-   const dispatch = useDispatch();
    const onSubmit = ({ displayName, email, password }) => {
       dispatch(startCreatingUserWithEmailPassword({ displayName, email, password }));
-      reset();
+      if (!errorMessage && errorMessage !== null) {
+         reset();
+      }
    };
 
    return (
@@ -51,8 +58,15 @@ export const FormHookYup = () => {
                />
             </Grid>
             <Grid container xs={12} sm={12} md={6} sx={{ mt: 0.5, mb: 0.5 }}>
+               <Grid xs sm={12} display={!!errorMessage ? '' : 'none'}>
+                  <Alert severity='error'>{errorMessage}</Alert>
+               </Grid>
                <Grid xs sm={12}>
-                  <Button onClick={handleSubmit(onSubmit)} variant='contained' fullWidth>
+                  <Button
+                     disabled={isCheckingAuthentication}
+                     onClick={handleSubmit(onSubmit)}
+                     variant='contained'
+                     fullWidth>
                      Submit
                   </Button>
                </Grid>
@@ -63,7 +77,7 @@ export const FormHookYup = () => {
                </Grid>
                <Grid>
                   <Link component={RouterLink} color='inherit' to='/auth/login'>
-                     Sign up
+                     Sign In
                   </Link>
                </Grid>
             </Grid>
