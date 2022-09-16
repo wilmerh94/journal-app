@@ -25,9 +25,7 @@ export const authSlice = createSlice({
          state.email = null;
          state.displayName = null;
          state.photoURL = null;
-         if (payload !== null && payload) {
-            state.errorMessage = payload.errorMessage;
-         }
+         state.errorMessage = payload?.errorMessage; //using the question mark im telling it that if we have payload coming look for errorMessage if not do not do anything
       },
       checkingCredentials: (state) => {
          state.status = 'checking';

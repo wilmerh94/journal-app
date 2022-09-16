@@ -25,3 +25,5 @@ Example of Slices
 As you can see my thunks are dispatching a checkingCredentials in my redux and then run the code that it needs to be there in asynchronously where this functions are coming from PROVIDER.JS and passing the props that i need to run the function. After get a response it will dispatch another functions from my redux
 
 This project is created by Wilmer Herrera
+
+https://animate.style/

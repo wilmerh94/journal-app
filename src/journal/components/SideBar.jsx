@@ -12,8 +12,11 @@ import {
    Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
+import { useSelector } from 'react-redux';
 
 export const SideBar = ({ drawerWidth }) => {
+   const { displayName } = useSelector((state) => state.auth);
+
    return (
       <Box component='nav' sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
          <Drawer
@@ -28,7 +31,7 @@ export const SideBar = ({ drawerWidth }) => {
             }}>
             <Toolbar>
                <Typography variant='h6' noWrap component='div'>
-                  Wilmer Herrera
+                  {displayName}
                </Typography>
             </Toolbar>
             <Divider />

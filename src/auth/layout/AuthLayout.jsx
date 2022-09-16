@@ -19,8 +19,9 @@ export const AuthLayout = ({ children, title = '' }) => {
             xs={5}
             sm={7}
             md={10}
+            lg={15}
             sx={{
-               width: { md: 45 },
+               width: { md: 400, lg: 600 },
                backgroundColor: 'background.paper',
                padding: 3,
                borderRadius: 2,

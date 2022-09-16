@@ -41,9 +41,9 @@ export const FormLoginHook = () => {
    };
 
    return (
-      <form>
+      <form className='animate__animated animate__fadeIn animate__faster'>
          <Grid container spacing={2}>
-            <Grid xs={12} md={6} sx={{ px: 0 }}>
+            <Grid xs={12} md={15} sx={{ px: 0 }}>
                <FormInputText
                   inputName={'email'}
                   register={register}
@@ -51,7 +51,7 @@ export const FormLoginHook = () => {
                   errors={errors.email}
                />
             </Grid>
-            <Grid xs={12} md={6} sx={{ px: 0 }}>
+            <Grid xs={12} md={15} sx={{ px: 0 }}>
                <FormInputText
                   type='password'
                   inputName={'password'}
@@ -60,7 +60,7 @@ export const FormLoginHook = () => {
                   errors={errors.password}
                />
             </Grid>
-            <Grid container xs={12} md={6}>
+            <Grid container xs={12} md={15}>
                <Grid xs sm={12} display={!!errorMessage ? '' : 'none'}>
                   <Alert severity='error'>{errorMessage}</Alert>
                </Grid>
