@@ -19,3 +19,10 @@ export const validationSchemaLogin = Yup.object().shape({
       .max(15, 'Must be 15 characters')
       .required('Required'),
 });
+export const validationSchemaNote = Yup.object().shape({
+   email: Yup.string().email('Email format is not valid').required('Required'),
+   password: Yup.string()
+      .min(6, 'Password must be minimum 2 characters')
+      .max(15, 'Must be 15 characters')
+      .required('Required'),
+});
