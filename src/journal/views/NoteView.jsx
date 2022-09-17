@@ -1,28 +1,46 @@
 import { SaveOutlined } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormInputText } from '../../auth/components/FormInputText';
+import { setActiveNote } from '../../store/journal/JournalSlice';
 import { ImageGallery } from '../components';
 
 export const NoteView = () => {
+   const dispatch = useDispatch();
+
    const { active: note } = useSelector((state) => state.journal);
-   const {
-      register,
-      handleSubmit,
-      reset,
-      setValue,
-      formState: { errors },
-   } = useForm();
+
+   const { register, formState, reset, watch } = useForm({
+      defaultValues: { title: note.title, body: note.body },
+   });
+
    const dateString = useMemo(() => {
       const newDate = new Date(note.date);
       return newDate.toUTCString();
    }, [note.date]);
 
-   setValue('title', note.title);
-   setValue('body', note.body);
+   /* This is how I update my form and redux at the same time */
+
+   useEffect(() => {
+      if (formState.isDirty) {
+         const { ...field } = formState.touchedFields;
+         console.log('formState', field);
+
+         const data = watch();
+         const oldData = { ...note };
+         const newData = { ...oldData, ...data };
+         dispatch(setActiveNote(newData));
+         if (field) {
+            const fieldName = Object.keys(field).toString();
+            reset({ fieldName: note.fieldName });
+            console.log('got it', fieldName);
+         }
+      }
+      // use entire formState object as optional array arg in useEffect, not individual properties of it
+   }, [formState.isDirty, watch]);
 
    return (
       <Grid
@@ -47,14 +65,12 @@ export const NoteView = () => {
                inputName={'title'}
                register={register}
                label={'Title'}
-               errors={errors.displayName}
                variant='filled'
             />
             <FormInputText
                inputName={'body'}
                register={register}
                label={'What happened today?'}
-               errors={errors.displayName}
                minRows={5}
                variant='filled'
                multiline={true}
