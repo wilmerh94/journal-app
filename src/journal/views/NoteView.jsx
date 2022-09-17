@@ -1,18 +1,18 @@
-import { SaveOutlined } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+import { SaveOutlined, UploadOutlined } from '@mui/icons-material';
+import { Button, IconButton, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.css';
-
 import { FormInputText } from '../../auth/components/FormInputText';
 import { setActiveNote } from '../../store/journal/JournalSlice';
 import { startSaveNote } from '../../store/journal/thunks';
 import { ImageGallery } from '../components';
-
 export const NoteView = () => {
+   const fileInput = useRef();
+
    const dispatch = useDispatch();
 
    const { active: note, messageSaved, isSaving } = useSelector((state) => state.journal);
@@ -68,6 +68,11 @@ export const NoteView = () => {
       dispatch(startSaveNote());
    };
 
+   const onFileInputChange = ({ target }) => {
+      if (target.files === 0) return;
+      // dispatch(startUploadingFile(target.files));
+   };
+
    return (
       <Grid
          className='animate__animated animate__fadeIn animate__faster'
@@ -82,6 +87,23 @@ export const NoteView = () => {
             </Typography>
          </Grid>
          <Grid>
+            {/*  */}
+            <input
+               style={{ display: 'none' }}
+               accept='image/*'
+               multiple
+               type='file'
+               ref={fileInput}
+               onChange={onFileInputChange}
+            />
+            <IconButton
+               onClick={() => fileInput.current.click()}
+               size='small'
+               color='primary'
+               disabled={isSaving}>
+               <UploadOutlined />
+            </IconButton>
+            {/*  */}
             <Button
                disabled={isSaving}
                color='primary'
