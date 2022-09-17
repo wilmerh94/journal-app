@@ -4,16 +4,20 @@ import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.css';
+
 import { FormInputText } from '../../auth/components/FormInputText';
 import { setActiveNote } from '../../store/journal/JournalSlice';
+import { startSaveNote } from '../../store/journal/thunks';
 import { ImageGallery } from '../components';
 
 export const NoteView = () => {
    const dispatch = useDispatch();
 
-   const { active: note } = useSelector((state) => state.journal);
+   const { active: note, messageSaved, isSaving } = useSelector((state) => state.journal);
 
-   const { register, formState, reset, watch } = useForm({
+   const { register, formState, reset, watch, setValue } = useForm({
       defaultValues: { title: note.title, body: note.body },
    });
 
@@ -21,6 +25,21 @@ export const NoteView = () => {
       const newDate = new Date(note.date);
       return newDate.toUTCString();
    }, [note.date]);
+
+   useEffect(() => {
+      setValue('title', note.title);
+      setValue('body', note.body);
+   }, [note]);
+
+   useEffect(() => {
+      if (messageSaved.length > 0) {
+         Swal.fire({
+            title: 'Note updated!',
+            text: messageSaved,
+            icon: 'success',
+         });
+      }
+   }, [messageSaved]);
 
    /* This is how I update my form and redux at the same time */
 
@@ -32,15 +51,22 @@ export const NoteView = () => {
          const data = watch();
          const oldData = { ...note };
          const newData = { ...oldData, ...data };
+         console.log('newData', newData);
          dispatch(setActiveNote(newData));
          if (field) {
             const fieldName = Object.keys(field).toString();
-            reset({ fieldName: note.fieldName });
+            console.log('fieldName', fieldName);
+            /* Making sure what is reset is the value on filename */
+            reset({ [`${fieldName}`]: note.fieldName });
             console.log('got it', fieldName);
          }
       }
       // use entire formState object as optional array arg in useEffect, not individual properties of it
    }, [formState.isDirty, watch]);
+
+   const onSaveNote = () => {
+      dispatch(startSaveNote());
+   };
 
    return (
       <Grid
@@ -56,7 +82,11 @@ export const NoteView = () => {
             </Typography>
          </Grid>
          <Grid>
-            <Button color='primary' sx={{ p: 2 }}>
+            <Button
+               disabled={isSaving}
+               color='primary'
+               sx={{ p: 2 }}
+               onClick={onSaveNote}>
                <SaveOutlined sx={{ fontSeize: 30, mr: 1 }} />
             </Button>
          </Grid>

@@ -28,9 +28,26 @@ export const JournalSlice = createSlice({
       },
       setNotes: (state, action) => {
          state.notes = action.payload;
+         state.messageSaved = '';
       },
-      setSaving: (state) => {},
-      updateNote: (state, action) => {},
+      setSaving: (state) => {
+         state.isSaving = true;
+         state.messageSaved = '';
+      },
+      updatedNote: (state, action) => {
+         //payload:note
+         state.isSaving = false;
+         state.notes = state.notes.map((note) => {
+            if (note.id === action.payload.id) {
+               return action.payload;
+            }
+            // If ID are not the same return the same note
+            return note;
+         });
+
+         // state.messageSaved = `${action.payload.title}, updated`;
+         state.messageSaved = `Your change has been updated!`;
+      },
       deleteNoteById: (state, action) => {},
    },
 });
@@ -41,6 +58,6 @@ export const {
    setActiveNote,
    setNotes,
    setSaving,
-   updateNote,
+   updatedNote,
    deleteNoteById,
 } = JournalSlice.actions;

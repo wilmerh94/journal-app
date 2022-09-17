@@ -1,7 +1,14 @@
 import { collection, doc, setDoc } from 'firebase/firestore/lite';
 import { FirebaseDB } from '../../firebase/config';
 import { loadNote } from '../../helper';
-import { addNewEmptyNote, savingNewNote, setActiveNote, setNotes } from './JournalSlice';
+import {
+   addNewEmptyNote,
+   savingNewNote,
+   setActiveNote,
+   setNotes,
+   setSaving,
+   updatedNote,
+} from './JournalSlice';
 
 export const startNewNote = () => {
    return async (dispatch, getState) => {
@@ -9,7 +16,6 @@ export const startNewNote = () => {
 
       const { uid } = getState().auth;
 
-      console.log(uid);
       // uid
       try {
          const newNote = {
@@ -39,8 +45,26 @@ export const startLoadingNotes = () => {
    return async (dispatch, getState) => {
       const { uid } = getState().auth;
       if (!uid) throw new Error('User not auth');
-      console.log(uid);
       const notes = await loadNote(uid);
       dispatch(setNotes(notes));
+   };
+};
+
+export const startSaveNote = () => {
+   return async (dispatch, getState) => {
+      dispatch(setSaving());
+
+      const { uid } = getState().auth;
+      const { active: note } = getState().journal;
+
+      const noteToFirestore = { ...note };
+      delete noteToFirestore.id;
+      /* This function is grabbing the collection first and then going to the params i need */
+      const newDoc = doc(
+         collection(FirebaseDB, 'users-journal', `${uid}`, 'notes'),
+         `${note.id}`,
+      );
+      const setDocResp = await setDoc(newDoc, noteToFirestore, { merge: true });
+      dispatch(updatedNote(note));
    };
 };
