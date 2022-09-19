@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthRoute } from '../auth/routes/AuthRoute';
 import { useCheckAuth } from '../hooks';
+import { CalendarPage } from '../journal/pages/CalendarPage';
 import { JournalPage } from '../journal/pages/JournalPage';
 import { CheckingAuth } from '../ui';
 
@@ -15,7 +16,10 @@ export const AppRouter = () => {
       <Routes>
          {/* Private Route for authentication */}
          {status === 'authenticated' ? (
-            <Route path='/*' element={<JournalPage />} />
+            <>
+               <Route path='/*' element={<JournalPage />} />
+               <Route path='/calendar' element={<CalendarPage />} />
+            </>
          ) : (
             <Route path='/auth/*' element={<AuthRoute />} />
          )}

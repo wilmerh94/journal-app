@@ -4,10 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startNewNote } from '../../store/journal/thunks';
 import { JournalLayout } from '../layout/JournalLayout';
 import { NoteView, NothingSelectedView } from '../views';
+import { CalendarPage } from './CalendarPage';
 
 export const JournalPage = () => {
    const dispatch = useDispatch();
    const { isSaving, active } = useSelector((state) => state.journal);
+   const { calendar } = useSelector((state) => state.calendar);
 
    // const creatingNewNote = useMemo(() => isSaving === true, [isSaving]);
 
@@ -17,7 +19,13 @@ export const JournalPage = () => {
 
    return (
       <JournalLayout>
-         {!!active ? <NoteView /> : <NothingSelectedView />}
+         {!!active && !calendar ? (
+            <NoteView />
+         ) : calendar ? (
+            <CalendarPage />
+         ) : (
+            <NothingSelectedView />
+         )}
          <IconButton
             disabled={isSaving}
             onClick={onClickNewNote}

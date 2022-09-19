@@ -48,16 +48,44 @@ export const JournalSlice = createSlice({
          // state.messageSaved = `${action.payload.title}, updated`;
          state.messageSaved = `Your change has been updated!`;
       },
-      deleteNoteById: (state, action) => {},
+      setPhotosToActiveNote: (state, action) => {
+         if (state.active.imageUrls) {
+            state.active.imageUrls = [...state.active.imageUrls, ...action.payload];
+         } else {
+            state.active.imageUrls = [action.payload];
+         }
+         state.isSaving = false;
+      },
+      setPhotoId: (state, action) => {
+         if (state.active.imageId) {
+            state.active.imageId = { ...state.active.imageId, ...action.payload };
+         } else {
+            state.active.imageId = action.payload;
+         }
+      },
+      clearNoteLogout: (state) => {
+         state.isSaving = false;
+         state.messageSaved = '';
+         state.notes = [];
+         state.active = null;
+      },
+      deleteNoteById: (state, action) => {
+         state.active && null;
+
+         state.notes = state.notes.filter((note) => note.id !== action.payload);
+      },
    },
 });
 // Action creators are generated for each case reducer function
 export const {
-   savingNewNote,
    addNewEmptyNote,
+   clearNoteLogout,
+   deleteNoteById,
+   savingNewNote,
    setActiveNote,
+   setPhotosToActiveNote,
    setNotes,
    setSaving,
    updatedNote,
-   deleteNoteById,
+   setPhotoId,
 } = JournalSlice.actions;

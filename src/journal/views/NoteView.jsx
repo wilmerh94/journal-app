@@ -1,19 +1,25 @@
-import { SaveOutlined, UploadOutlined } from '@mui/icons-material';
-import { Button, IconButton, Typography } from '@mui/material';
+import { DeleteOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material';
+import { Button, IconButton, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.css';
 import { FormInputText } from '../../auth/components/FormInputText';
 import { setActiveNote } from '../../store/journal/JournalSlice';
-import { startSaveNote } from '../../store/journal/thunks';
+import {
+   startDeletingNote,
+   startSaveNote,
+   startUploadingFile,
+} from '../../store/journal/thunks';
 import { ImageGallery } from '../components';
+
 export const NoteView = () => {
    const fileInput = useRef();
 
    const dispatch = useDispatch();
+   const [fileName, setFileName] = useState('');
 
    const { active: note, messageSaved, isSaving } = useSelector((state) => state.journal);
 
@@ -69,8 +75,22 @@ export const NoteView = () => {
    };
 
    const onFileInputChange = ({ target }) => {
+      /* making my files in to array to have names */
+      // const files = { ...target.files };
+      // console.log(files);
+
+      // let filesName = {};
+      // files.forEach((file) => {
+      //    filesName = file.name;
+      // });
+      // console.log(filesName);
       if (target.files === 0) return;
-      // dispatch(startUploadingFile(target.files));
+      setFileName(target.files[0].name);
+      dispatch(startUploadingFile(target.files));
+   };
+
+   const onDelete = () => {
+      dispatch(startDeletingNote());
    };
 
    return (
@@ -88,21 +108,39 @@ export const NoteView = () => {
          </Grid>
          <Grid>
             {/*  */}
-            <input
-               style={{ display: 'none' }}
-               accept='image/*'
-               multiple
-               type='file'
-               ref={fileInput}
-               onChange={onFileInputChange}
+            <TextField
+               disabled
+               label={'Upload Image'}
+               required
+               variant='standard'
+               // inputRef={scriptInputRef} // To focus on the field after clicking icon
+               value={fileName ? fileName : ''}
+               InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                     <>
+                        <IconButton
+                           aria-label='upload'
+                           component='label' // THIS IS THE GENIUS CHANGE
+                           // onClick={() => fileInput.current.click()}
+                           size='small'
+                           color='primary'
+                           disabled={isSaving}>
+                           <UploadOutlined />
+                           <input
+                              hidden
+                              type='file'
+                              multiple
+                              onChange={onFileInputChange}
+                              // style={{ display: 'none' }}
+                              accept='image/*'
+                              ref={fileInput}
+                           />
+                        </IconButton>
+                     </>
+                  ),
+               }}
             />
-            <IconButton
-               onClick={() => fileInput.current.click()}
-               size='small'
-               color='primary'
-               disabled={isSaving}>
-               <UploadOutlined />
-            </IconButton>
             {/*  */}
             <Button
                disabled={isSaving}
@@ -127,8 +165,17 @@ export const NoteView = () => {
                variant='filled'
                multiline={true}
             />
+            <Grid
+               container
+               alignItems='center'
+               justifyContent='flex-end'
+               sx={{ width: '100%' }}>
+               <Button color='error' onClick={onDelete}>
+                  <DeleteOutline /> Delete
+               </Button>
+            </Grid>
          </Grid>
-         <ImageGallery />
+         <ImageGallery images={note.imageUrls && note.imageUrls} />
       </Grid>
    );
 };

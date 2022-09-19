@@ -6,23 +6,29 @@ function srcset(image, size, rows = 1, cols = 1) {
       srcSet: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`,
    };
 }
-export const ImageGallery = () => {
+export const ImageGallery = ({ images }) => {
    return (
-      <ImageList
-         sx={{ width: 500, height: 500 }}
-         variant='quilted'
-         cols={4}
-         rowHeight={150}>
-         {itemData.map((item) => (
-            <ImageListItem key={item.img} cols={item.cols || 1} rows={item.rows || 1}>
-               <img
-                  {...srcset(item.img, 121, item.rows, item.cols)}
-                  alt={item.title}
-                  loading='lazy'
-               />
-            </ImageListItem>
-         ))}
-      </ImageList>
+      images && (
+         <ImageList
+            sx={{ width: 500, height: 500 }}
+            variant='quilted'
+            cols={4}
+            rowHeight={150}>
+            {images.map((image) => (
+               <ImageListItem
+                  key={image}
+                  // cols={ item.cols || 1 } rows={ item.rows || 1 }
+               >
+                  <img
+                     src={`${image}?w=164&h=164&fit=crop&auto=format`}
+                     srcSet={`${image}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                     alt='Image from note'
+                     loading='lazy'
+                  />
+               </ImageListItem>
+            ))}
+         </ImageList>
+      )
    );
 };
 
